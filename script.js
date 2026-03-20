@@ -46,7 +46,12 @@ async function getWeather() {
         );
 
         document.getElementById("ai").innerText = aiText;
-        speak(aiText);
+        document.getElementById("speakBtn").style.display = "block";
+
+        function speakAI() {
+            const text = document.getElementById("ai").innerText;
+            speak(text);
+        }
 
     } catch (error) {
         alert("Error fetching data");
