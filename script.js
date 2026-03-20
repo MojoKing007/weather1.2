@@ -57,24 +57,13 @@ async function getWeather() {
 
 
 async function getAIWeatherComment(city, temp, desc) {
-    const prompt = `The weather in ${city} is ${temp}°C with ${desc}. Give a short friendly suggestion.`;
-
     try {
         const response = await fetch("/.netlify/functions/ai-comment", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${groqApiKey}`
             },
-            body: JSON.stringify({
-                model: "llama-3.1-8b-instant",
-                messages: [
-                    { role: "system", content: "You are a sarcastic and witty weather assistant. Keep responses short, funny, and slightly savage. Keep your response a little Desi." },
-                    { role: "user", content: `The weather in ${city} is ${temp}°C with ${desc}.` }
-                ],
-                temperature: 0.7,
-                max_tokens: 50
-            })
+            body: JSON.stringify({ city, temp, desc })
         });
 
         const data = await response.json();
@@ -91,6 +80,7 @@ async function getAIWeatherComment(city, temp, desc) {
         return "AI error";
     }
 }
+
 
 function speak(text) {
     const speech = new SpeechSynthesisUtterance(text);
