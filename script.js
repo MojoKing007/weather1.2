@@ -1,5 +1,3 @@
-
-
 async function getWeather() {
     const city = document.getElementById("cityInput").value;
 
@@ -24,8 +22,6 @@ async function getWeather() {
         document.getElementById("humidity").innerText = `Humidity: ${data.main.humidity}%`;
         document.getElementById("wind").innerText = `Wind Speed: ${data.wind.speed} m/s`;
 
-
-
         const weatherMain = data.weather[0].main.toLowerCase();
 
         if (weatherMain.includes("cloud")) {
@@ -38,7 +34,6 @@ async function getWeather() {
             document.body.style.background = "#4facfe";
         }
 
-        // 🤖 AI COMMENT (NEW)
         const aiText = await getAIWeatherComment(
             data.name,
             data.main.temp,
@@ -48,18 +43,16 @@ async function getWeather() {
         document.getElementById("ai").innerText = aiText;
         document.getElementById("speakBtn").style.display = "block";
 
-        function speakAI() {
-            const text = document.getElementById("ai").innerText;
-            speak(text);
-        }
-
     } catch (error) {
         alert("Error fetching data");
         console.log(error);
     }
 }
 
-
+function speakAI() {
+    const text = document.getElementById("ai").innerText;
+    speak(text);
+}
 
 async function getAIWeatherComment(city, temp, desc) {
     try {
@@ -72,7 +65,6 @@ async function getAIWeatherComment(city, temp, desc) {
         });
 
         const data = await response.json();
-        console.log("Groq:", data);
 
         if (data.error) {
             return "AI error: " + data.error.message;
@@ -86,19 +78,22 @@ async function getAIWeatherComment(city, temp, desc) {
     }
 }
 
-
 function speak(text) {
-    const speech = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(text);
 
-    const voices = speechSynthesis.getVoices();
+    const setVoiceAndSpeak = () => {
+        const voices = speechSynthesis.getVoices();
+        utterance.voice = voices.find(v => v.name.includes("Google"))
+            || voices.find(v => v.name.includes("Female"))
+            || voices[0];
+        utterance.rate = 0.95;
+        utterance.pitch = 1;
+        speechSynthesis.speak(utterance);
+    };
 
-    // Try finding a natural voice
-    speech.voice = voices.find(v => v.name.includes("Google"))
-        || voices.find(v => v.name.includes("Female"))
-        || voices[0];
-
-    speech.rate = 0.95;
-    speech.pitch = 1;
-
-    speechSynthesis.speak(speech);
+    if (speechSynthesis.getVoices().length > 0) {
+        setVoiceAndSpeak();
+    } else {
+        speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
+    }
 }
