@@ -1,4 +1,4 @@
-const apiKey = "4ea153eb0012e0dd0b60999cf4d21e78";
+
 
 async function getWeather() {
     const city = document.getElementById("cityInput").value;
@@ -8,8 +8,7 @@ async function getWeather() {
         return;
     }
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-
+    const url = `/.netlify/functions/weather?city=${city}`;
     try {
         const response = await fetch(url);
         const data = await response.json();
@@ -55,13 +54,13 @@ async function getWeather() {
     }
 }
 
-const groqApiKey = "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";
+
 
 async function getAIWeatherComment(city, temp, desc) {
     const prompt = `The weather in ${city} is ${temp}°C with ${desc}. Give a short friendly suggestion.`;
 
     try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const response = await fetch("/.netlify/functions/ai-comment", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
